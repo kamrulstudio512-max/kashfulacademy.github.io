@@ -1,0 +1,347 @@
+<!doctype html>
+<html lang="bn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>কাশফুল একাডেমি | আয়-ব্যয়ের হিসাব</title>
+<style>
+:root{--green:#176b4d;--gold:#c99b35;--bg:#f4f7f5;--ink:#1e2b25;--muted:#64736b;--line:#dce6df;--red:#b33d3d}
+*{box-sizing:border-box}body{margin:0;font-family:"Noto Sans Bengali","SolaimanLipi",Arial,sans-serif;background:var(--bg);color:var(--ink)}
+header{background:linear-gradient(120deg,#104b38,#1c7956);color:white;padding:24px max(18px,calc((100% - 1180px)/2));border-bottom:4px solid var(--gold)}
+header h1{margin:0;font-size:clamp(23px,4vw,34px)}header p{margin:8px 0 0;color:#e3f0e8}
+main{max-width:1180px;margin:22px auto;padding:0 16px 44px}.topbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:space-between;margin-bottom:16px}
+button,.filelabel{border:0;border-radius:9px;padding:10px 14px;background:var(--green);color:white;font:inherit;cursor:pointer}button.secondary,.filelabel{background:white;color:var(--green);border:1px solid var(--line)}button.danger{background:#fff0f0;color:var(--red);border:1px solid #f1d1d1}button.small{padding:6px 9px;font-size:13px}
+.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:14px 0 20px}.card{background:white;border:1px solid var(--line);border-radius:14px;padding:16px;box-shadow:0 3px 10px #173f2b08}.card .label{font-size:14px;color:var(--muted)}.amount{font-size:clamp(20px,3vw,29px);font-weight:700;margin-top:7px}.income{color:var(--green)}.expense{color:var(--red)}.balance{color:#946c10}
+.layout{display:grid;grid-template-columns:340px 1fr;gap:16px;align-items:start}.panel{background:white;border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:16px}.panel h2{font-size:19px;margin:0 0 15px}.formgrid{display:grid;gap:11px}label{font-size:14px;color:#43544a;display:block;margin-bottom:5px}input,select,textarea{width:100%;padding:10px 11px;border:1px solid #ccd9d0;border-radius:8px;font:inherit;background:white;color:var(--ink)}input:focus,select:focus{outline:2px solid #b6d9c5;border-color:var(--green)}.twocol{display:grid;grid-template-columns:1fr 1fr;gap:10px}.filters{display:grid;grid-template-columns:1fr 1fr 1fr;gap:9px;margin-bottom:12px}.tablewrap{overflow:auto}table{width:100%;border-collapse:collapse;min-width:670px}th,td{text-align:left;padding:11px 9px;border-bottom:1px solid #e8eee9;font-size:14px}th{background:#f7faf8;color:#526158;font-weight:600}td .memo{font-size:12px;color:var(--muted);margin-top:3px}.tag{border-radius:30px;padding:4px 8px;font-size:12px}.tag.in{background:#e7f5ed;color:#176b4d}.tag.out{background:#fff0f0;color:#a52d2d}.empty{text-align:center;color:var(--muted);padding:30px}.note{font-size:13px;line-height:1.6;color:var(--muted)}.status{font-size:13px;color:var(--muted)}.reportrow{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px solid #edf1ee}.reportrow:last-child{border:0}.hide{display:none!important}
+@media(max-width:850px){.layout{grid-template-columns:1fr}.cards{grid-template-columns:repeat(2,1fr)}.filters{grid-template-columns:1fr 1fr}.filters>*:last-child{grid-column:1/-1}}
+@media(max-width:440px){.cards{gap:8px}.card{padding:12px}.amount{font-size:20px}.twocol{grid-template-columns:1fr}.filters{grid-template-columns:1fr}.filters>*:last-child{grid-column:auto}}
+@media print{body{background:white}header{padding:12px;background:white;color:#111;border-bottom:2px solid #777}header p{color:#333}main{max-width:none;margin:8px;padding:0}.topbar button,.topbar .filelabel,.layout>aside,.filters button,.actions,.status{display:none!important}.layout{display:block}.panel,.card{box-shadow:none;break-inside:avoid}.cards{grid-template-columns:repeat(4,1fr)}table{min-width:0}th,td{font-size:11px;padding:6px}.filters{display:none}}
+</style>
+<style>
+#loginGate{position:fixed;inset:0;z-index:9999;background:linear-gradient(135deg,#104b38,#1c7956);display:flex;align-items:center;justify-content:center;padding:20px}
+.login-card{background:#fff;border-radius:18px;padding:28px;width:min(100%,430px);box-shadow:0 18px 60px #0003;text-align:center}
+.login-card h2{margin:0 0 8px;color:#176b4d}.login-card p{color:#64736b;line-height:1.6;font-size:14px}
+.login-mark{font-size:42px;margin-bottom:8px}.login-error{color:#b33d3d;font-size:13px;min-height:20px}
+#signedInBar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;color:#e3f0e8;font-size:13px;margin-top:8px}
+#signedInBar button{padding:5px 9px;font-size:12px;background:#fff;color:#176b4d}
+</style>
+
+<style>
+:root{--green:#146447;--gold:#d5a63c;--bg:#f3f7f4;--ink:#1c2b23;--muted:#64766b;--line:#dce7df;--red:#b33d3d}
+body{background:radial-gradient(circle at top right,#e7f2eb 0,transparent 35%),var(--bg);line-height:1.5}
+header{background:linear-gradient(125deg,#0d3d2e,#16704e 65%,#21835d);box-shadow:0 5px 20px #123b2912}
+header h1{letter-spacing:.2px}
+main{max-width:1280px}
+.card,.panel{box-shadow:0 8px 24px #163d2910;transition:transform .18s ease,box-shadow .18s ease}
+.card:hover{transform:translateY(-2px);box-shadow:0 12px 28px #163d2917}
+.card{border-radius:16px;border-top:3px solid #d8e9df}
+.card:nth-child(1){border-top-color:#20845b}.card:nth-child(2){border-top-color:#c74b4b}.card:nth-child(3){border-top-color:#d0a033}.card:nth-child(4){border-top-color:#718c7b}
+.panel{border-radius:16px}
+button,.filelabel{transition:filter .15s ease,transform .15s ease}
+button:hover,.filelabel:hover{filter:brightness(.97);transform:translateY(-1px)}
+input,select{min-height:42px}
+.notice{max-width:1280px;margin:14px auto 0;padding:11px 16px;border:1px solid #d5e6da;border-radius:12px;background:#edf7f0;color:#345b45;font-size:13px}
+.tablewrap table tbody tr:hover{background:#f7fbf8}
+#monthReport{background:#f8fbf9;border-radius:10px;padding:10px}
+@media(max-width:850px){.notice{margin:12px 16px 0}.topbar{align-items:flex-start}.topbar>div:last-child{width:100%}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+</style>
+
+
+<style>
+/* Kashful Academy professional refresh */
+:root{--green:#176447;--gold:#d8ad4d;--bg:#f4f7f5;--ink:#172820;--muted:#65766c;--line:#dce7df;--red:#b33d3d}
+body{font-family:Inter,"Noto Sans Bengali","SolaimanLipi",Arial,sans-serif;background:#f3f6f4;color:var(--ink);line-height:1.55}
+header{padding:25px max(18px,calc((100% - 1280px)/2));background:linear-gradient(125deg,#103f30 0%,#176447 58%,#21805a 100%);border-bottom:4px solid var(--gold)}
+.brand-row{display:flex;align-items:center;gap:16px;max-width:1280px;margin:auto}
+.brand-mark{width:62px;height:62px;flex:0 0 62px;border-radius:18px;background:linear-gradient(145deg,#f9e8b5,#d7aa48);display:grid;place-items:center;box-shadow:0 8px 20px #071d1433;border:2px solid #fff5d5}
+.brand-mark span{font-size:25px;font-weight:900;color:#124631}
+.brand-copy h1{margin:0;font-size:clamp(24px,3.5vw,34px);letter-spacing:.2px}
+.brand-copy p{margin:4px 0 0;color:#e3f0e8;font-size:14px}
+.brand-copy .brand-en{font-size:12px;font-weight:800;letter-spacing:2.5px;color:#f2d58a;margin-top:1px}
+.header-chip{margin-left:auto;border:1px solid #ffffff42;background:#ffffff12;color:#eef8f1;border-radius:999px;padding:9px 13px;font-size:12px;white-space:nowrap}
+.live-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:#8ce0a9;margin-right:7px}
+.notice{max-width:1280px;margin:16px auto 0;padding:12px 16px;border:1px solid #d6e6db;border-radius:12px;background:#edf7f0;color:#345b45;font-size:13px}
+main{max-width:1280px;margin:22px auto;padding:0 18px 48px}
+.topbar{background:#fff;border:1px solid var(--line);border-radius:16px;padding:16px 18px;box-shadow:0 6px 20px #183e2910}
+.topbar>div:first-child>strong{font-size:18px}
+.cards{gap:14px;margin:18px 0 22px}
+.card{border:1px solid var(--line);border-top:3px solid #d8e9df;border-radius:16px;padding:19px;background:#fff;box-shadow:0 6px 20px #183e290b;min-width:0}
+.card:nth-child(1){border-top-color:#21845b}.card:nth-child(2){border-top-color:#c84b4b}.card:nth-child(3){border-top-color:#d0a033}.card:nth-child(4){border-top-color:#789586}
+.card .label{font-size:13px;font-weight:600;color:var(--muted)}
+.amount{font-size:clamp(20px,2.4vw,29px);overflow-wrap:anywhere}
+.layout{grid-template-columns:minmax(285px,330px) minmax(0,1fr);gap:18px}
+.panel{border:1px solid var(--line);border-radius:16px;padding:20px;box-shadow:0 6px 22px #183e290a;background:#fff}
+.panel h2{font-size:18px;font-weight:750;letter-spacing:-.2px}
+button,.filelabel{border-radius:10px;font-weight:650;min-height:40px}
+button:focus-visible,.filelabel:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid #a8d9bc;outline-offset:2px}
+button:hover,.filelabel:hover{filter:brightness(.97);transform:translateY(-1px)}
+button.secondary,.filelabel{background:#fff;color:#176447;border:1px solid #d4e1d8}
+button.danger{background:#fff3f3;color:#a52d2d;border-color:#f0d4d4}
+input,select,textarea{border-color:#cfdbd2;border-radius:10px;min-height:43px}
+input:focus,select:focus,textarea:focus{outline:2px solid #b6d9c5;border-color:var(--green)}
+th{background:#f3f8f4;color:#4c6154;font-size:12px;text-transform:none}
+th,td{padding:12px 10px}
+.tablewrap{border:1px solid #e5ece7;border-radius:12px}
+.tablewrap table{border-collapse:separate;border-spacing:0;min-width:700px}
+.tablewrap th:first-child{border-top-left-radius:12px}.tablewrap th:last-child{border-top-right-radius:12px}
+.tablewrap table tbody tr:hover{background:#f6faf7}
+.tag{font-weight:700}
+#monthReport{background:#f6faf7;border:1px solid #e3ece6;border-radius:12px;padding:12px}
+.note{font-size:13px;line-height:1.75}
+.status{margin-top:4px}
+.empty{padding:35px 18px}
+#loginGate{background:radial-gradient(circle at 20% 10%,#2b8a61 0,transparent 35%),linear-gradient(135deg,#0d3d2e,#1c7956)}
+.login-card{border:1px solid #e3ece6;border-radius:22px;padding:32px;box-shadow:0 24px 70px #061c133b}
+.login-mark{width:68px;height:68px;margin:0 auto 14px;border-radius:20px;display:grid;place-items:center;background:linear-gradient(145deg,#f9e8b5,#d7aa48);color:#124631;font-size:27px;font-weight:900}
+.login-card h2{font-size:24px}
+.login-card .login-subtitle{margin-top:-2px;font-size:12px;font-weight:800;letter-spacing:2px;color:#9a782b}
+#googleButton{display:flex;justify-content:center;margin:18px auto 8px;min-height:42px}
+@media(max-width:900px){.layout{grid-template-columns:1fr}.layout>aside{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;align-items:start}.layout>aside .panel{margin-bottom:0}.layout>section>.panel{margin-bottom:14px}}
+@media(max-width:650px){header{padding:20px 16px}.brand-row{gap:12px;align-items:flex-start}.brand-mark{width:50px;height:50px;flex-basis:50px;border-radius:14px}.brand-mark span{font-size:21px}.brand-copy h1{font-size:23px}.brand-copy p{font-size:12px}.brand-copy .brand-en{font-size:10px;letter-spacing:1.8px}.header-chip{display:none}main{padding:0 12px 32px;margin:14px auto}.notice{margin:12px 12px 0}.topbar{padding:14px}.topbar>div:last-child{display:grid!important;grid-template-columns:1fr 1fr;width:100%;gap:8px!important}.topbar>div:last-child>*{width:100%;text-align:center;justify-content:center}.cards{gap:9px;margin:12px 0 15px}.card{padding:13px;border-radius:13px}.card .label{font-size:11px}.amount{font-size:19px}.layout>aside{grid-template-columns:1fr}.panel{padding:15px}.filters{grid-template-columns:1fr}.filters>*:last-child{grid-column:auto}.tablewrap table{min-width:670px}.login-card{padding:24px 18px}}
+@media(max-width:360px){.brand-copy h1{font-size:20px}.brand-copy .brand-en{letter-spacing:1px}.cards{grid-template-columns:1fr 1fr}.amount{font-size:17px}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important}}
+@media print{.brand-mark,.header-chip{display:none!important}.brand-row{display:block}.brand-copy .brand-en{color:#333}header{box-shadow:none!important}.topbar{box-shadow:none;padding:8px;border:0}}
+</style>
+
+</head>
+<body>
+<div id="loginGate" role="dialog" aria-modal="true" aria-labelledby="loginTitle">
+  <div class="login-card">
+    <div class="login-mark" aria-hidden="true">কা</div>
+    <h2 id="loginTitle">কাশফুল একাডেমি</h2>
+    <div class="login-subtitle">KASHFUL ACADEMY</div>
+    <p>আয়-ব্যয়ের হিসাব ব্যবস্থাপনা ড্যাশবোর্ডে প্রবেশ করতে অনুমোদিত Google অ্যাকাউন্ট দিয়ে সাইন ইন করুন।</p>
+    <div class="note" style="text-align:left;margin:12px 0">
+      <strong>সেটআপের অবস্থা: Google লগইন এখনো কনফিগার করা হয়নি।</strong><br>
+      ওয়েবসাইট অনলাইনে প্রকাশ করার আগে Google Cloud থেকে Web OAuth Client ID তৈরি করে HTML ফাইলে বসাতে হবে। আপাতত এই ফাইলটি সেটআপের জন্য প্রস্তুত।
+      <br><a href="https://console.cloud.google.com/" target="_blank" rel="noopener noreferrer">Google Cloud Console খুলুন</a>
+    </div>
+    <div id="googleButton"></div>
+    <div id="loginError" class="login-error" role="status" aria-live="polite"></div>
+    <p class="note">নিরাপত্তা নোট: এই HTML সংস্করণে Google সাইন-ইন ব্রাউজার-ভিত্তিক। সংবেদনশীল আর্থিক তথ্যের জন্য সার্ভার-সাইড পরিচয় যাচাই ও অনুমতিনিয়ন্ত্রণ প্রয়োজন।</p>
+  </div>
+</div>
+
+<header>
+  <div class="brand-row">
+    <div class="brand-mark" aria-hidden="true"><span>কা</span></div>
+    <div class="brand-copy">
+      <h1>কাশফুল একাডেমি</h1>
+      <p class="brand-en">KASHFUL ACADEMY</p>
+      <p>আয়-ব্যয়ের হিসাব ব্যবস্থাপনা · সহজ, পরিষ্কার ও সুশৃঙ্খল</p>
+    </div>
+    <div class="header-chip"><span class="live-dot"></span> হিসাব ব্যবস্থাপনা</div>
+  </div>
+</header>
+<div class="notice"><strong>📌 স্থানীয় হিসাব:</strong> তথ্য এই ব্রাউজারেই সংরক্ষিত হয়—নিয়মিত ব্যাকআপ নিন। এটি একক HTML ফাইল; প্রকৃত নিরাপত্তার জন্য সার্ভার-সাইড লগইন ও ডেটাবেস প্রয়োজন।</div>
+<main>
+ <div class="topbar">
+  <div><strong>হিসাবের ড্যাশবোর্ড</strong><div class="status" id="saveStatus">আপনার তথ্য এই ব্রাউজারে সংরক্ষিত হবে।</div>
+   <div id="signedInBar" class="hide"><span id="signedInEmail"></span><button onclick="signOut()">সাইন আউট</button></div></div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="secondary" onclick="exportCSV()">Excel/CSV ডাউনলোড</button><button class="secondary" onclick="backup()">ব্যাকআপ নিন</button><label class="filelabel" for="restoreFile">ব্যাকআপ ফেরত আনুন</label><input id="restoreFile" type="file" accept=".json,application/json" class="hide" onchange="restoreBackup(event)"/><button onclick="window.print()">রিপোর্ট প্রিন্ট / PDF</button></div>
+ </div>
+ <section class="cards">
+  <div class="card"><div class="label">মোট আয় (ফিল্টার অনুযায়ী)</div><div class="amount income" id="totalIn">৳ ০</div></div>
+  <div class="card"><div class="label">মোট ব্যয় (ফিল্টার অনুযায়ী)</div><div class="amount expense" id="totalOut">৳ ০</div></div>
+  <div class="card"><div class="label">নিট ব্যালেন্স</div><div class="amount balance" id="balance">৳ ০</div></div>
+  <div class="card"><div class="label">লেনদেন সংখ্যা</div><div class="amount" id="count">০</div></div>
+ </section>
+ <div class="layout">
+  <aside>
+   <section class="panel">
+    <h2 id="formTitle">নতুন লেনদেন যোগ করুন</h2>
+    <form id="entryForm" class="formgrid">
+     <input id="editId" type="hidden"/>
+     <div><label for="type">লেনদেনের ধরন *</label><select id="type" required><option value="income">আয়</option><option value="expense">ব্যয়</option></select></div>
+     <div><label for="date">তারিখ *</label><input id="date" type="date" required/></div>
+     <div><label for="category">খাত *</label><input id="category" list="categories" placeholder="যেমন: ভর্তি ফি, সম্মানী" required/><datalist id="categories">
+      <option>ভর্তি ফি</option><option>মাসিক বেতন</option><option>কোর্স ফি</option><option>অনুদান</option><option>ওয়ার্কশপ</option><option>গান নির্মাণ ফি</option><option>অনুষ্ঠান আয়</option><option>সরকারি অনুদান</option><option>বাড়িভাড়া</option><option>প্রশিক্ষক সম্মানী</option><option>বিদ্যুৎ বিল</option><option>যাতায়াত</option><option>প্রচার ও মার্কেটিং</option><option>স্টেশনারি</option><option>অনুষ্ঠান ব্যয়</option><option>অন্যান্য</option>
+     </datalist></div>
+     <div><label for="amount">টাকার পরিমাণ (৳) *</label><input id="amount" type="number" min="0.01" step="0.01" placeholder="যেমন: ২৫০০" required/></div>
+     <div><label for="person">ব্যক্তি / প্রতিষ্ঠান (ঐচ্ছিক)</label><input id="person" placeholder="যেমন: শিক্ষার্থী বা সরবরাহকারী"/></div>
+     <div><label for="note">বিবরণ (ঐচ্ছিক)</label><input id="note" placeholder="লেনদেন সম্পর্কে সংক্ষিপ্ত তথ্য"/></div>
+     <div style="display:flex;gap:8px"><button type="submit" id="submitBtn" style="flex:1">হিসাব সংরক্ষণ</button><button type="button" class="secondary hide" id="cancelEdit" onclick="resetForm()">বাতিল</button></div>
+    </form>
+   </section>
+   <section class="panel">
+    <h2>বকেয়া হিসাব</h2>
+    <form id="dueForm" class="formgrid">
+     <div><label for="duePerson">নাম *</label><input id="duePerson" required placeholder="শিক্ষার্থী / ব্যক্তি"/></div>
+     <div class="twocol"><div><label for="dueType">ধরন</label><select id="dueType"><option value="receivable">পাওনা</option><option value="payable">দেনা</option></select></div><div><label for="dueAmount">টাকা (৳) *</label><input id="dueAmount" type="number" min="0.01" step="0.01" required/></div></div>
+     <div><label for="dueNote">বিবরণ</label><input id="dueNote" placeholder="যেমন: সেপ্টেম্বরের বেতন"/></div>
+     <button type="submit">বকেয়া যোগ করুন</button>
+    </form>
+    <div id="duesList" style="margin-top:14px"></div>
+   </section>
+   <section class="panel">
+    <h2>মাসিক সারাংশ</h2>
+    <div class="twocol"><div><label for="reportMonth">মাস নির্বাচন</label><input id="reportMonth" type="month"/></div><div style="display:flex;align-items:end"><button class="secondary" style="width:100%" onclick="showMonth()">সারাংশ দেখুন</button></div></div>
+    <div id="monthReport" style="margin-top:12px" class="note">একটি মাস নির্বাচন করে সারাংশ দেখুন।</div>
+   </section>
+  </aside>
+  <section>
+   <div class="panel">
+    <h2>লেনদেনের তালিকা</h2>
+    <div class="filters">
+     <div><label for="filterMonth">মাস</label><input id="filterMonth" type="month"/></div>
+     <div><label for="filterType">ধরন</label><select id="filterType"><option value="all">সব লেনদেন</option><option value="income">শুধু আয়</option><option value="expense">শুধু ব্যয়</option></select></div>
+     <div><label for="search">খুঁজুন</label><input id="search" placeholder="খাত, নাম, বিবরণ"/></div>
+    </div>
+    <div class="tablewrap"><table><thead><tr><th>তারিখ</th><th>ধরন</th><th>খাত ও বিবরণ</th><th>ব্যক্তি</th><th>টাকা</th><th class="actions">কাজ</th></tr></thead><tbody id="entriesBody"></tbody></table></div>
+    <div id="empty" class="empty">এখনো কোনো লেনদেন যোগ করা হয়নি। বাম পাশের ফর্ম থেকে প্রথম হিসাবটি যোগ করুন।</div>
+   </div>
+   <div class="panel"><h2>ব্যবহার নির্দেশনা</h2><div class="note">
+    ১. আয় বা ব্যয় বেছে নিয়ে তারিখ, খাত ও টাকা লিখে সংরক্ষণ করুন।<br>
+    ২. মাস নির্বাচন করলে ওই মাসের হিসাব ও সারাংশ দেখতে পারবেন। মাসের ফিল্টার ফাঁকা রাখলে সব হিসাব দেখা যাবে।<br>
+    ৩. নিয়মিত “ব্যাকআপ নিন” চাপুন এবং JSON ফাইলটি নিরাপদ স্থানে রাখুন। অন্য কম্পিউটার বা ব্রাউজারে আনতে “ব্যাকআপ ফেরত আনুন” ব্যবহার করুন।<br>
+    ৪. “রিপোর্ট প্রিন্ট / PDF” চাপলে ব্রাউজারের প্রিন্ট উইন্ডো থেকে PDF হিসেবে সংরক্ষণ করতে পারবেন। CSV ফাইল Excel-এ খোলা যাবে।<br><br>
+    <strong>গুরুত্বপূর্ণ:</strong> হিসাব এই ব্রাউজারেই সংরক্ষিত থাকে; ব্রাউজারের ডেটা মুছে গেলে হিসাব হারাতে পারেন। তাই নিয়মিত ব্যাকআপ রাখুন। এই ওয়েবসাইট নিজে থেকে ব্যাংক হিসাবের সঙ্গে যুক্ত নয়।
+   </div></div>
+  </section>
+ </div>
+</main>
+<div id="dateEditModal" class="hide" style="position:fixed;inset:0;z-index:99999;background:#0008;display:flex;align-items:center;justify-content:center;padding:18px">
+ <div style="background:white;width:min(100%,380px);padding:22px;border-radius:16px;box-shadow:0 15px 50px #0003">
+  <h2 style="margin:0 0 8px;color:#176b4d;font-size:20px">লেনদেনের তারিখ পরিবর্তন</h2>
+  <p style="font-size:14px;color:#64736b;margin:0 0 14px">নতুন তারিখ নির্বাচন করুন, তারপর সংরক্ষণ চাপুন।</p>
+  <label for="newEntryDate">নতুন তারিখ</label><input id="newEntryDate" type="date" style="margin-bottom:16px"/>
+  <div style="display:flex;gap:8px"><button type="button" onclick="saveChangedDate()" style="flex:1">তারিখ সংরক্ষণ</button><button type="button" class="secondary" onclick="closeDateEditor()" style="flex:1">বাতিল</button></div>
+  <div id="dateEditError" style="color:#b33d3d;font-size:13px;margin-top:10px"></div>
+ </div>
+</div>
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<script>
+/*
+ KASHFUL ACADEMY — GOOGLE SIGN-IN SETUP (NOT YET CONFIGURED)
+ 1) Publish the site on an HTTPS hosting provider or test locally first.
+ 2) In Google Cloud Console, create/select a project and configure Google Auth Platform branding/audience.
+ 3) Create OAuth Client ID > Web application.
+ 4) For local testing, add http://localhost:8000 under Authorized JavaScript origins.
+ 5) After hosting, add the exact production origin (for example https://your-domain.example) there too.
+    Enter origins only: scheme + hostname (+ port if needed), no page path.
+ 6) Paste the Web Client ID below. Never put a Client Secret in this HTML file.
+ 7) For a genuinely secure financial system, verify Google ID tokens on a backend and store records in a protected database.
+    This single-file version only stores records in this browser's localStorage and is NOT secure multi-user authorization.
+ Local test: python -m http.server 8000
+ Open: http://localhost:8000/Kashful_Academy_Accounting_Professional.html
+*/
+const GOOGLE_CLIENT_ID = ''; // Add the Web OAuth Client ID here after creating it.
+const ALLOWED_EMAIL = 'kamrulislamarafat96@gmail.com';
+function decodeGoogleCredential(jwt){
+  try {
+    const payload = jwt.split('.')[1].replace(/-/g,'+').replace(/_/g,'/');
+    return JSON.parse(decodeURIComponent(Array.prototype.map.call(atob(payload), c => '%' + ('00'+c.charCodeAt(0).toString(16)).slice(-2)).join('')));
+  } catch(e) { return null; }
+}
+function handleGoogleCredential(response){
+  const user = decodeGoogleCredential(response.credential || '');
+  if(!user || !user.email || user.email_verified !== true){
+    document.getElementById('loginError').textContent='Google পরিচয় যাচাই করা যায়নি। আবার চেষ্টা করুন।'; return;
+  }
+  if(user.email.toLowerCase() !== ALLOWED_EMAIL.toLowerCase()){
+    document.getElementById('loginError').textContent='এই Google অ্যাকাউন্টটি অনুমোদিত নয়।'; return;
+  }
+  // This is a client-side convenience gate only. Do not treat it as secure authorization without a server validating the ID token.
+  sessionStorage.setItem('kashful_google_email', user.email);
+  document.getElementById('loginGate').classList.add('hide');
+  document.getElementById('signedInBar').classList.remove('hide');
+  document.getElementById('signedInEmail').textContent='সাইন ইন: '+user.email;
+  document.getElementById('loginError').textContent='';
+}
+function signOut(){
+  sessionStorage.removeItem('kashful_google_email');
+  document.getElementById('loginGate').classList.remove('hide');
+  document.getElementById('signedInBar').classList.add('hide');
+  document.getElementById('googleButton').innerHTML='';
+  initGoogleSignIn();
+}
+function initGoogleSignIn(){
+  if(!window.google || !google.accounts || !google.accounts.id){setTimeout(initGoogleSignIn,300);return;}
+  if(!GOOGLE_CLIENT_ID || GOOGLE_CLIENT_ID.startsWith('YOUR_')){
+    document.getElementById('loginError').textContent='Google OAuth Client ID এখনো দেওয়া হয়নি। Google Cloud Console-এ Web Client ID তৈরি করে কোডের GOOGLE_CLIENT_ID ঘরে বসান।';
+    return;
+  }
+  google.accounts.id.initialize({client_id:GOOGLE_CLIENT_ID,callback:handleGoogleCredential});
+  google.accounts.id.renderButton(document.getElementById('googleButton'),{theme:'outline',size:'large',shape:'pill',text:'signin_with',width:280});
+}
+document.addEventListener('DOMContentLoaded', function(){
+  const activeEmail = sessionStorage.getItem('kashful_google_email');
+  if(activeEmail && activeEmail.toLowerCase() === ALLOWED_EMAIL.toLowerCase()){
+    $('loginGate')?.classList.add('hide');
+    $('signedInBar')?.classList.remove('hide');
+    if($('signedInEmail')) $('signedInEmail').textContent='সাইন ইন: '+activeEmail;
+  }
+  initGoogleSignIn();
+});
+const KEY='kashful_academy_accounts_v1';
+let entries=[], dues=[];
+const $=id=>document.getElementById(id);
+const bn=n=>Number(n||0).toLocaleString('bn-BD',{maximumFractionDigits:2});
+const money=n=>'৳ '+bn(n);
+const today=()=>{let d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`};
+function load(){try{let s=JSON.parse(localStorage.getItem(KEY)||'{}');entries=Array.isArray(s.entries)?s.entries:[];dues=Array.isArray(s.dues)?s.dues:[]}catch(e){entries=[];dues=[];$('saveStatus').textContent='আগের তথ্য পড়া যায়নি—ব্যাকআপ ফাইল থাকলে ফেরত আনুন।'}}
+function save(){
+  try{
+    localStorage.setItem(KEY,JSON.stringify({entries,dues}));
+    $('saveStatus').textContent='সংরক্ষিত হয়েছে · '+new Date().toLocaleTimeString('bn-BD',{hour:'2-digit',minute:'2-digit'});
+    render();
+  }catch(e){
+    $('saveStatus').textContent='সংরক্ষণ করা যায়নি—ব্যাকআপ নিন বা ব্রাউজার স্টোরেজ পরীক্ষা করুন।';
+    alert('ব্রাউজারে তথ্য সংরক্ষণ করা যায়নি। জায়গা খালি আছে কি না বা প্রাইভেট ব্রাউজিং বন্ধ আছে কি না পরীক্ষা করুন।');
+  }
+}
+function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function filtered(){let m=$('filterMonth').value,t=$('filterType').value,q=$('search').value.trim().toLowerCase();return entries.filter(e=>(!m||e.date.startsWith(m))&&(t==='all'||e.type===t)&&(!q||[e.category,e.person,e.note].join(' ').toLowerCase().includes(q))).sort((a,b)=>b.date.localeCompare(a.date)||b.created-a.created)}
+function render(){
+ const arr=filtered(),inc=arr.filter(e=>e.type==='income').reduce((s,e)=>s+e.amount,0),out=arr.filter(e=>e.type==='expense').reduce((s,e)=>s+e.amount,0);
+ $('totalIn').textContent=money(inc);$('totalOut').textContent=money(out);$('balance').textContent=money(inc-out);$('count').textContent=bn(arr.length);
+ $('entriesBody').innerHTML=arr.map(e=>`<tr><td>${esc(e.date)}</td><td><span class="tag ${e.type==='income'?'in':'out'}">${e.type==='income'?'আয়':'ব্যয়'}</span></td><td><strong>${esc(e.category)}</strong>${e.note?`<div class="memo">${esc(e.note)}</div>`:''}</td><td>${esc(e.person||'—')}</td><td style="font-weight:700;white-space:nowrap">${money(e.amount)}</td><td class="actions" style="white-space:nowrap"><button class="small secondary" onclick="editEntry('${e.id}')">এডিট</button> <button class="small secondary" onclick="changeEntryDate('${e.id}')">তারিখ বদল</button> <button class="small danger" onclick="deleteEntry('${e.id}')">মুছুন</button></td></tr>`).join('');
+ $('empty').classList.toggle('hide',arr.length>0);renderDues();
+}
+$('entryForm').addEventListener('submit',ev=>{ev.preventDefault();let id=$('editId').value;let amount=Number($('amount').value);if(!(amount>0))return alert('সঠিক টাকার পরিমাণ লিখুন।');let old=entries.find(e=>e.id===id);let e={id:id||crypto.randomUUID(),type:$('type').value,date:$('date').value,category:$('category').value.trim(),amount,person:$('person').value.trim(),note:$('note').value.trim(),created:old?.created||Date.now()};if(!e.date||!e.category)return; if(id)entries=entries.map(x=>x.id===id?e:x);else entries.push(e);resetForm();save()});
+function renderCategorySummary(arr){
+ const groups={};
+ arr.forEach(e=>{const key=(e.type==='income'?'আয় · ':'ব্যয় · ')+(e.category||'অন্যান্য');groups[key]=(groups[key]||0)+Number(e.amount||0)});
+ const items=Object.entries(groups).sort((a,b)=>b[1]-a[1]).slice(0,10);
+ if(!items.length){$('categorySummary').innerHTML='লেনদেন যোগ করলে খাতভিত্তিক সারাংশ এখানে দেখা যাবে।';return}
+ const max=Math.max(...items.map(x=>x[1]),1);
+ $('categorySummary').innerHTML=items.map(([name,value])=>`<div style="margin:10px 0"><div style="display:flex;justify-content:space-between;gap:12px;margin-bottom:4px"><span>${esc(name)}</span><strong>${money(value)}</strong></div><div style="height:8px;background:#e8efe9;border-radius:20px;overflow:hidden"><div style="height:100%;width:${Math.max(3,value/max*100)}%;background:${name.startsWith('আয়')?'#21845b':'#c84c4c'};border-radius:20px"></div></div></div>`).join('');
+}
+function editEntry(id){let e=entries.find(x=>x.id===id);if(!e)return;$('editId').value=e.id;$('type').value=e.type;$('date').value=e.date;$('category').value=e.category;$('amount').value=e.amount;$('person').value=e.person;$('note').value=e.note;$('formTitle').textContent='লেনদেন সংশোধন করুন';$('submitBtn').textContent='পরিবর্তন সংরক্ষণ';$('cancelEdit').classList.remove('hide');window.scrollTo({top:0,behavior:'smooth'})}
+function resetForm(){$('entryForm').reset();$('editId').value='';$('date').value=today();$('formTitle').textContent='নতুন লেনদেন যোগ করুন';$('submitBtn').textContent='হিসাব সংরক্ষণ';$('cancelEdit').classList.add('hide')}
+let dateEditingId=null;
+function changeEntryDate(id){
+ const entry=entries.find(e=>e.id===id);if(!entry){alert('লেনদেনটি খুঁজে পাওয়া যায়নি।');return;}
+ dateEditingId=id;
+ $('newEntryDate').value=entry.date;
+ $('dateEditError').textContent='';
+ $('dateEditModal').classList.remove('hide');
+ $('newEntryDate').focus();
+}
+function closeDateEditor(){dateEditingId=null;$('dateEditModal').classList.add('hide');}
+function saveChangedDate(){
+ const entry=entries.find(e=>e.id===dateEditingId);
+ const value=$('newEntryDate').value;
+ if(!entry){$('dateEditError').textContent='লেনদেনটি পাওয়া যায়নি। তালিকা রিফ্রেশ করে আবার চেষ্টা করুন।';return;}
+ if(!value){$('dateEditError').textContent='অনুগ্রহ করে একটি তারিখ নির্বাচন করুন।';return;}
+ const parts=value.split('-').map(Number);
+ const d=new Date(parts[0],parts[1]-1,parts[2]);
+ if(d.getFullYear()!==parts[0]||d.getMonth()!==parts[1]-1||d.getDate()!==parts[2]){$('dateEditError').textContent='সঠিক তারিখ নির্বাচন করুন।';return;}
+ entry.date=value;
+ try{save();closeDateEditor();alert('তারিখ সফলভাবে পরিবর্তন ও সংরক্ষণ করা হয়েছে।');}
+ catch(err){$('dateEditError').textContent='সংরক্ষণ করা যায়নি। ব্রাউজারের স্টোরেজ সেটিংস পরীক্ষা করুন।';}
+}
+function deleteEntry(id){if(confirm('এই লেনদেনটি মুছে ফেলবেন?')){entries=entries.filter(e=>e.id!==id);save()}}
+$('dueForm').addEventListener('submit',ev=>{ev.preventDefault();let amount=Number($('dueAmount').value);if(!(amount>0))return;dues.push({id:crypto.randomUUID(),person:$('duePerson').value.trim(),type:$('dueType').value,amount,note:$('dueNote').value.trim(),created:Date.now()});$('dueForm').reset();save()});
+function renderDues(){$('duesList').innerHTML=dues.length?dues.map(d=>`<div class="reportrow"><div><strong>${esc(d.person)}</strong><div class="note">${d.type==='receivable'?'পাওনা':'দেনা'}${d.note?' · '+esc(d.note):''}</div></div><div style="text-align:right;white-space:nowrap"><strong>${money(d.amount)}</strong><br><button class="small danger" onclick="deleteDue('${d.id}')">মুছুন</button></div></div>`).join(''):'<div class="note">এখনো বকেয়া যোগ করা হয়নি।</div>'}
+function deleteDue(id){if(confirm('এই বকেয়া মুছে ফেলবেন?')){dues=dues.filter(d=>d.id!==id);save()}}
+function showMonth(){let m=$('reportMonth').value;if(!m){alert('একটি মাস নির্বাচন করুন।');return}let a=entries.filter(e=>e.date.startsWith(m)),i=a.filter(e=>e.type==='income').reduce((s,e)=>s+e.amount,0),o=a.filter(e=>e.type==='expense').reduce((s,e)=>s+e.amount,0);$('monthReport').innerHTML=`<div class="reportrow"><span>মোট আয়</span><strong class="income">${money(i)}</strong></div><div class="reportrow"><span>মোট ব্যয়</span><strong class="expense">${money(o)}</strong></div><div class="reportrow"><span>নিট উদ্বৃত্ত / ঘাটতি</span><strong>${money(i-o)}</strong></div><div class="reportrow"><span>লেনদেন</span><strong>${bn(a.length)}টি</strong></div>`}
+function exportCSV(){let rows=[['তারিখ','ধরন','খাত','ব্যক্তি','বিবরণ','টাকা'],...filtered().map(e=>[e.date,e.type==='income'?'আয়':'ব্যয়',e.category,e.person,e.note,e.amount])];let csv='\ufeff'+rows.map(r=>r.map(x=>'"'+String(x??'').replace(/"/g,'""')+'"').join(',')).join('\r\n');download(new Blob([csv],{type:'text/csv;charset=utf-8;'}),'kashful-hisab.csv')}
+function backup(){download(new Blob([JSON.stringify({entries,dues,backupDate:new Date().toISOString()},null,2)],{type:'application/json'}),'kashful-hisab-backup.json')}
+function download(blob,name){let a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}
+function restoreBackup(ev){let f=ev.target.files[0];if(!f)return;let r=new FileReader();r.onload=()=>{try{let s=JSON.parse(r.result);if(!Array.isArray(s.entries)||!Array.isArray(s.dues))throw Error();if(confirm('বর্তমান হিসাবের জায়গায় ব্যাকআপের হিসাব বসবে। আগে বর্তমান হিসাবের ব্যাকআপ নিয়েছেন তো?')){entries=s.entries;dues=s.dues;save();alert('ব্যাকআপ সফলভাবে ফেরত আনা হয়েছে।')}}catch(e){alert('ফাইলটি সঠিক ব্যাকআপ নয়।')}ev.target.value=''};r.readAsText(f)}
+['filterMonth','filterType','search'].forEach(id=>$(id).addEventListener('input',render));
+$('date').value=today();$('reportMonth').value=today().slice(0,7);load();render();
+</script>
+</body></html>
